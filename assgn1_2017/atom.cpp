@@ -1,5 +1,5 @@
 #include <iostream>
-#include <cstdlib>
+#include <random>
 #include <string>
 #include "list.cpp"
 #include "commons.h"
@@ -27,7 +27,6 @@ Nucleus::~Nucleus()
 	delete neutronList;
 }
 
-
 Atom::Atom(int protonNumber, int neutronNumber)
 {
 	nucleus = new Nucleus(protonNumber, neutronNumber);
@@ -36,8 +35,8 @@ Atom::Atom(int protonNumber, int neutronNumber)
 	for (int i = 0; i < protonNumber; i++)
 		electronList->add(new Electron());
 
-	cout << "An atom has been constructed " << protonNumber << " " << neutronNumber
-			<< endl;
+	cout << "An atom has been constructed with " << protonNumber
+			<< " protons and " << neutronNumber << " neutrons "<< endl;
 }
 
 Atom::~Atom()
@@ -55,7 +54,7 @@ int Atom::get_atom_number()
 
 int Atom::get_mass_number()
 {
-	return nucleus->neutronList->getSize();
+	return nucleus->neutronList->getSize() + nucleus->protonList->getSize();
 }
 
 int Atom::get_electric_charge()
@@ -86,13 +85,13 @@ void Atom::print()
 
 	cout << "{" << endl;
 	Iterator<Electron>* eIt = electronList->iterator();
-	while(eIt->hasNext())
+	while (eIt->hasNext())
 		eIt->next()->print();
 	Iterator<Proton>* pIt = nucleus->protonList->iterator();
-	while(pIt->hasNext())
+	while (pIt->hasNext())
 		pIt->next()->print();
 	Iterator<Neutron>* nIt = nucleus->neutronList->iterator();
-	while(nIt->hasNext())
+	while (nIt->hasNext())
 		nIt->next()->print();
 }
 
@@ -173,9 +172,14 @@ int main()
 	int neutronCount = 0;
 	double chargeCount = 0.0;
 
-	int N = rand() % 1000;
+	std::random_device rd;
+	std::mt19937 rng(rd());
+	std::uniform_int_distribution<int> uni(1, 10000);
+	auto random_integer = uni(rng);
 
-	for( int i = 0; i < N; i++)
+	int N = random_integer;
+
+	for (int i = 0; i < N; i++)
 	{
 		int isotope = 12 + (rand() % 3);
 
@@ -185,13 +189,14 @@ int main()
 
 		protonCount += atom->get_atom_number();
 		neutronCount += atom->get_mass_number() - atom->get_atom_number();
+
 		chargeCount += atom->get_electric_charge();
+
 	}
 
 	cout << "Total protons created : " << protonCount << endl;
 	cout << "Total neutrons created : " << neutronCount << endl;
 	cout << "Total electric charge created : " << chargeCount << endl;
-
 
 	return 0;
 }

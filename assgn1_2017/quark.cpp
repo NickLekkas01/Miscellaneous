@@ -17,7 +17,7 @@ Quark::~Quark()
 }
 
 UpQuark::UpQuark() :
-		Quark("2.01 MeV/c^2", 2/3)
+		Quark("2.01 MeV/c^2", (double)2/3)
 {
 	this->type = "Up Quark";
 
@@ -30,7 +30,7 @@ UpQuark::~UpQuark()
 }
 
 DownQuark::DownQuark() :
-		Quark("4.7 MeV/c^2", -1/3)
+		Quark("4.7 MeV/c^2", (double)-1/3)
 {
 	this->type = "Down Quark";
 
