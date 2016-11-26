@@ -21,12 +21,17 @@ char is_valid(char ch)
 {
 	if (ch >= '!' && ch <= 'u')
 		return 1;
+	if (ch == 'z')
+		return 1;
 	if (is_whitespace(ch))
 		return 1;
 
 	return 0;
 }
 
+/*
+ * Reverses the bytes of the integer.
+ */
 unsigned int reverse(unsigned int a)
 {
 	unsigned int b = (a & 0xFF000000) >> 24;
@@ -43,7 +48,7 @@ void print(unsigned int i, int bytes)
 	i = reverse(i);
 
 	int k;
-	for (k = 1; k <= 4; k++)
+	for (k = 1; k <= bytes; k++)
 	{
 		putchar(i & 0xFF);
 		i >>= 8;
@@ -52,48 +57,76 @@ void print(unsigned int i, int bytes)
 
 int main()
 {
+	//check the start of the input.
 	if (getchar() != '<' || getchar() != '~')
 	{
-		printf("bad input start\n");
+		printf("bad start\n");
 		return -1;
 	}
 
 	int count = 0;
-	char ch = getchar();
-	long integer = 0;
+	int ch;
+	long integer = 0; //use long to avoid overflows in case of bad input.
 
-	while (is_valid(ch= getchar()))
+	while ((ch = getchar()) != EOF)
 	{
-		if (is_whitespace(ch))
+		/* check for the end. */
+		if (ch == '~' && getchar() == '>' && getchar() == '\n')
 		{
-			/* Ignore whitespace characters. */
-			continue;
+			while (is_whitespace(ch = getchar()))
+			{
+				/* trash any whitespaces at the end.*/
+			}
+
+			if (ch != EOF)
+			{
+				printf("Unnecessary input\n");
+				return -1;
+			}
+
+			if (count % 5)
+			{
+				int i;
+				for (i = 0; i < 4 - (count % 5); i++)
+				{
+					integer += ('u' - 33) * pow(85, i);
+				}
+
+				print(integer, (count % 5) - 1);
+			}
+			return 0;
 		}
+
+		if (!is_valid(ch))
+		{
+			printf("Bad input character\n");
+			return -1;
+		}
+
+		if (is_whitespace(ch))
+			continue;
 
 		if (ch == 'z')
 		{
-			/* 'z' means 4 zeros, so if integer already contains data there is an error. */
 			if (integer)
 			{
 				printf("Bad input character\n");
-				return 0;
+				return -1;
 			}
 
 			print(0, 4);
-			continue;
 		}
 
 		int i = 4 - (count % 5);
 
-		integer += pow(85, i) * (ch - 33);
+		integer += (ch - 33) * pow(85, i);
 
 		if (i == 0)
 		{
-			/* check for overflow */
 			if (integer > 0xFFFFFFFF)
 			{
 				printf("Bad input character\n");
-				return 0;
+				return -1;
 			}
 
 			print(integer, 4);
@@ -102,34 +135,10 @@ int main()
 		}
 
 		count++;
+
 	}
 
-	if(integer)
-	{
-		int i;
-		int zCount = 0;
+	printf("Bad end\n");
 
-		while( (i = 4 - (count % 5)) != 0)
-		{
-
-			integer += ('u' - 33) * pow(85, i);
-			count ++;
-			zCount++;
-		}
-
-		print(integer, 4);
-	}
-
-	if (ch != '~' || getchar() != '>' || getchar() != '\n')
-	{
-		printf("bad input end\n");
-		return -1;
-	}
-
-	if (getchar() != EOF)
-	{
-		printf("Unnecessary input\n");
-	}
-
-	return 0;
+	return -1;
 }

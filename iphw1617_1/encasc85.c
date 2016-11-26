@@ -10,7 +10,7 @@ int byteCount = 0;
 /*
  * Prints the character <ch> and adds a new line for every 50 bytes of output.
  */
-void print_output(char ch)
+void print_output(int ch)
 {
 	if (ch == '\n')
 	{
@@ -29,20 +29,25 @@ void print_output(char ch)
 	}
 }
 
+unsigned int toInt(char a, char b, char c, char d)
+{
+	return (a << 24) | (b << 16) | (c << 8) | d;
+}
+
 /*
  * reverses the base 85 digits of <a> .
  */
-unsigned int reverse_base85(unsigned int a)
+long reverse_base85(long a)
 {
-	unsigned int b = a % 85;
+	long b = a % 85;
 
 	int i;
-	for (i = 1; i <= 4; i++)
+	for (i = 1; i < 5; i++)
 	{
-		a /= 85;
 		b *= 85;
+		a /= 85;
 
-		b += (a % 85);
+		b += a % 85;
 	}
 
 	return b;
@@ -51,7 +56,7 @@ unsigned int reverse_base85(unsigned int a)
 /*
  * Prints the first <bytes> of the unsigned integer in Ascii 85 encoding.
  */
-void print_base85(unsigned int i, int bytes)
+void print_base85(long i, int bytes)
 {
 	if (bytes > 5 || bytes <= 0)
 	{
@@ -89,9 +94,9 @@ void print_base85(unsigned int i, int bytes)
 
 int main()
 {
-	char ch;
+	int ch;
 	int count = 0;
-	unsigned int integer = 0; // used for storing the input.
+	long integer = 0; // used for storing the input.
 
 	putchar('<');
 	putchar('~');
