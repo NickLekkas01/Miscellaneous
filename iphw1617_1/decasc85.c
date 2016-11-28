@@ -60,7 +60,7 @@ int main()
 	//check the start of the input.
 	if (getchar() != '<' || getchar() != '~')
 	{
-		printf("bad start\n");
+		fprintf(stderr, "bad start\n");
 		return -1;
 	}
 
@@ -80,7 +80,7 @@ int main()
 
 			if (ch != EOF)
 			{
-				printf("Unnecessary input\n");
+				fprintf(stderr, "Unnecessary input\n");
 				return -1;
 			}
 
@@ -99,7 +99,7 @@ int main()
 
 		if (!is_valid(ch))
 		{
-			printf("Bad input character\n");
+			fprintf(stderr, "Bad input character\n");
 			return -1;
 		}
 
@@ -110,7 +110,7 @@ int main()
 		{
 			if (integer)
 			{
-				printf("Bad input character\n");
+				fprintf(stderr, "Bad input character\n");
 				return -1;
 			}
 
@@ -125,7 +125,7 @@ int main()
 		{
 			if (integer > 0xFFFFFFFF)
 			{
-				printf("Bad input character\n");
+				fprintf(stderr, "Bad input character\n");
 				return -1;
 			}
 
@@ -138,7 +138,7 @@ int main()
 
 	}
 
-	printf("Bad end\n");
+	fprintf(stderr, "Bad end\n");
 
 	return -1;
 }
