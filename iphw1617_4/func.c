@@ -36,7 +36,12 @@ double fitness(Guess guess)
 
 double drand()
 {
-	double r = ((double) rand()) / (double) RAND_MAX;
+	return ((double) rand()) / (double) RAND_MAX;
+}
+
+double randValue()
+{
+	double r = drand;
 	return (r * 2) - 1;
 }
 
@@ -52,7 +57,7 @@ void init()
 		int j;
 		for (j = 0; j < variableSize; j++)
 		{
-			guess.values[j] = drand();
+			guess.values[j] = randValue();
 		}
 
 		guess.fitness = fitness(guess);
@@ -63,7 +68,6 @@ void init()
 
 void cross(Guess* a, Guess* b)
 {
-	//Crossing
 	int i = (rand() % (variableSize - 1)) + 1;
 
 	Guess ta;
@@ -92,10 +96,30 @@ void cross(Guess* a, Guess* b)
   	b = &tb;
 }
 
+void crossing()
+{
+	int i ;
+	for( i = 0; i < populationSize; i+=2)
+	{
+		cross(&population[i], &population[i+1]);
+	}
+}
+
 void mutation()
 {
-	r=drand();
-	if (r<)
+	int i;
+	for(i = 0; i < populationSize; i++ )
+	{
+		int j;
+		for( j = 0; j < variableSize; j++)
+		{
+			double r = drand();
+			if( r < mutationPropability)
+			{
+				population[i].values[j] = randValue();
+			}
+		}
+	}
 }
 
 int main()
@@ -107,6 +131,8 @@ int main()
 	int g;
 	for (g = 0; g <= generationsSize; g++)
 	{
+		crossing();
+		mutation();
 
 	}
 }
