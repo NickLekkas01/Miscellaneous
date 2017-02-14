@@ -155,6 +155,7 @@ void cross(unsigned int* a, unsigned int* b)
 void crossing()
 {
 	int j;
+	// for odd populationSize this throws seg fault.
 	for (j = 0; j < populationSize; j += 2)
 	{
 		double r = ((double) rand()) / RAND_MAX;
