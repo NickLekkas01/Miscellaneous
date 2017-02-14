@@ -1,3 +1,27 @@
+
+/*
+ * You dirty minded freak! You want some comments? I will give you some comments!
+ *
+ * A project made by Kostas  Alexopoulos (souperk) and Nikos Lekkas. 
+ * 
+ * We bring no responsibilty for any damage done to your property by the current software.
+ *
+ * However, some any damage done to your brain by the comments, you may accuse Kostas Alexopoulos.
+ *
+ * Compilation Instructions :
+ * Pending....
+ *
+ * Execution Instructions : 
+ * 
+ * -FT <FT> : for setting the fitness goal. Can have any integer value. Default value is 1024 ( = 32 * 32 ).
+ * -P <P> : for setting population size. Can have any integer value. Default value is 10.
+ * -G <G> : for setting the generation size. Can have any integer value. Default value is 50.
+ * -PC <PC> : for setting the probabilty of crossing. Can have any real value in [0,1] . Default value is 0.3 .
+ * -PM <PM> : for setting the probability of mutation. Can have any real value in [0,1]. Default value is  0.1 .
+ * 
+ * 
+ */
+
 #include <time.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -48,6 +72,11 @@ unsigned int scan()
 	return i;
 }
 
+/*
+ * Assuming K has the value described above, returns an integer pos so that
+ * K[pos] <= num < K[pos+1}
+ *
+ */
 int binarySearch(int num)
 {
 	int low = 0;
@@ -70,6 +99,10 @@ int binarySearch(int num)
 }
 
 
+/*
+ * Returns the fitness as described the excerise description.
+ *
+ */
 int fitness(unsigned int N)
 {
 	unsigned int mask = 1;
@@ -85,8 +118,10 @@ int fitness(unsigned int N)
 }
 
 
+/*
+ * Initiates the population using random values.
+ */
 void initPopulation()
-
 {
 	int i;
 	for (i = 0; i < populationSize; i++)
@@ -95,9 +130,10 @@ void initPopulation()
 	}
 }
 
-
-
-int precomp()
+/*
+ * 
+ */
+int compute()
 {
 	int i;
 
@@ -115,9 +151,11 @@ int precomp()
 		K[i + 1] = K[i] + f;
 	}
 	return maxPos;
-
 }
 
+/*
+ * Swaps the 2 elements a and b.
+ */
 void swap(unsigned int* a, unsigned int* b)
 {
 	unsigned int* t = a;
@@ -126,6 +164,9 @@ void swap(unsigned int* a, unsigned int* b)
 }
 
 
+/*
+ * 
+ */
 void selection()
 {
 	int j;
@@ -137,26 +178,33 @@ void selection()
 		temp[j] = C[pos];
 	}
 
+	
 	swap(C, temp);
 }
 
 
+/*
+ * Picks a random crossing point and crosses a and b on that point.
+ */
 void cross(unsigned int* a, unsigned int* b)
 {
 	int i = (rand() % 31) + 1;
 	int rmask = (1 << i) - 1, lmask = !rmask;
 	int temp = (*b & rmask);
+
 	*b = (*a & rmask) | (*b & lmask);
 	*a = temp | (*a & lmask);
 
 }
 
-
+/*
+ * Applies crossing to the current population.
+ */
 void crossing()
 {
 	int j;
 	// for odd populationSize this throws seg fault.
-	for (j = 0; j < populationSize; j += 2)
+	for (j = 0; j < populationSize - 1; j += 2)
 	{
 		double r = ((double) rand()) / RAND_MAX;
 		if (crossingPropability > r)
@@ -164,9 +212,10 @@ void crossing()
 	}
 }
 
-
+/*
+ * Applies mutation to the current population.
+ */
 void mutation()
-
 {
 	int i;
 	for (i = 0; i < populationSize; i++)
@@ -184,6 +233,9 @@ void mutation()
 	}
 }
 
+/*
+ * 
+ */
 void parseArguments(int argc, int* argv[])
 {
 	populationSize = 100;
@@ -203,7 +255,7 @@ void parseArguments(int argc, int* argv[])
 		}else if(strcmp(option, "-G") == 0)
 		{
 			generationsSize = atoi(argv[++i]);
-		}else if(strcmp(option, "-FT"))
+		}else if(strcmp(option, "-FT") == 0)
 		{
 			fitnessGoal =  atoi(argv[++i]);
 		}else if(strcmp(option, "-PC") == 0)
@@ -243,7 +295,7 @@ int main(int argc, int* argv[])
 	
 	for (i = 0; i <= generationsSize; i++)
 	{
-		int maxPos = precomp();
+		int maxPos = compute();
 		
 		int f = fitness(C[maxPos]);
 		
