@@ -9,7 +9,7 @@ typedef struct Guess
 	double fitness;
 } Guess;
 
-int variableSize = 5;
+int variableSize ;
 int generationsSize;
 int populationSize;
 int fitnessGoal;
@@ -108,7 +108,7 @@ void cross(Guess* a, Guess* b)
 void crossing()
 {
 	int i ;
-	for( i = 0; i < populationSize; i+=2)
+	for( i = 0; i < populationSize - 1; i+=2)
 	{
 		cross(&population[i], &population[i+1]);
 	}
@@ -132,6 +132,7 @@ void mutation()
 
 void parseArguments(int argc, int* argv[])
 {
+	variableSize = 10;
 	populationSize = 100;
 	generationsSize = 50	;
 	fitnessGoal = 1024;
@@ -149,7 +150,7 @@ void parseArguments(int argc, int* argv[])
 		}else if(strcmp(option, "-G") == 0)
 		{
 			generationsSize = atoi(argv[++i]);
-		}else if(strcmp(option, "-FT"))
+		}else if(strcmp(option, "-FT") == 0)
 		{
 			fitnessGoal =  atoi(argv[++i]);
 		}else if(strcmp(option, "-PC") == 0)
@@ -163,10 +164,27 @@ void parseArguments(int argc, int* argv[])
 			variableSize = atoi(argv[++i]);
 		}else
 		{
-			printf("You dummy !! Look at the README for the proper usage format!!");
+			printf("You dummy! Look at the README for the proper usage format!!");
 			exit(1);
 		}
 	}
+}
+
+Guess* copy(Guess guess)
+{
+	
+	Guess* copy = malloc(sizeof(Guess));
+
+	copy->fitness = guess.fitness;
+	copy->values = (double*) malloc(sizeof(double) * variableSize);
+	
+	int i;
+	for( i =0 ; i < variableSize; i++)
+	{
+		copy->values[i] = guess.values[i];
+	}
+	
+	return copy;
 }
 
 int main(int argc, int* argv[])
@@ -199,10 +217,10 @@ int main(int argc, int* argv[])
 	printf("Best Guess : (");
 	
 	int i;
-	for(i = 0; i < variableSize; i++)
+	for(i = 0; i < variableSize - 1; i++)
 	{
-		printf("x%d = %lf ", i, maxGuess->values[i]);
+		printf("x%d = %lf, ", i, maxGuess->values[i]);
 	}
 	
-	printf(") -> %lf \n", maxGuess->fitness);
+	printf(" x%d = %lf) -> %lf \n", variableSize -1 , maxGuess->values[variableSize - 1],  maxGuess->fitness);
 }
