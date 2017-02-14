@@ -4,7 +4,6 @@
 #include <math.h>
 
 typedef struct Guess
-
 {
 	double* values;
 	double fitness;
@@ -168,22 +167,6 @@ void parseArguments(int argc, int* argv[])
 			exit(1);
 		}
 	}
-}
-
-Guess* copy(Guess guess)
-{
-	Guess* copy = malloc(sizeof(Guess));
-	
-	copy->fitness = guess.fitness;
-	
-	copy->values = (double*) malloc(sizeof(double) * variableSize);
-	int i;
-	for( i =0 ; i < variableSize; i++)
-	{
-		copy->values[i] = guess.values[i];
-	} 
-	
-	return copy;
 }
 
 int main(int argc, int* argv[])
