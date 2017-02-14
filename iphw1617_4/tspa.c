@@ -12,11 +12,17 @@ int fitnessGoal;
 double crossingPropability;
 double mutationPropability;
 
+char fileInputFlag = 0;
+int* filename;
+
+char checkFlag = 0;
+
 int citySize;
 
 typedef struct Guess
 {
 	int distance;
+	double fitness;
 	
 	int* values;
 } Guess;
@@ -100,13 +106,15 @@ void init_population()
 int compute()
 {
 	int maxPos = 0;
+	
 	int i;
 	
 	for(i = 0; i < populationSize; i++)
 	{
 		population[i].distance = distance(population[i]);
+		population[i].fitness  =  1.0 / ((double) population[i].distance);
 		
-		if(population[i].distance > population[maxPos].distance)
+		if(population[i].fitness > population[maxPos].fitness)
 		{
 			maxPos = i;
 		}
@@ -246,6 +254,14 @@ void parseArguments(int argc, int* argv[])
 		}else if(strcmp(option, "-PM") == 0)
 		{
 			sscanf(argv[++i], "%lf", &mutationPropability);
+		}else if(strcmp(option, "-c") == 0)
+		{
+			checkFlag = 1;
+		}else if(strcmp(option, "-i") == 0)
+		{
+			fileInputFlag = 1;
+			filename = argv[++i];
+			sscanf(argv[++i], "%lf", &mutationPropability);
 		}else
 		{
 			printf("You dummy !! Look at the README for the proper usage format!!");
@@ -260,6 +276,7 @@ Guess* copy(Guess guess)
 	Guess* copy = malloc(sizeof(Guess));
 
 	copy->distance = guess.distance;
+	copy->fitness = guess.fitness;
 	copy->values = (double*) malloc(sizeof(double) * citySize);
 	
 	int i;
@@ -297,11 +314,8 @@ void parseInput()
 	}
 }
 
-int main(int argc, int* argv[])
+void geneticAlgorithm()
 {
-	
-	parseArguments(argc, argv);
-	parseInput();
 
 	srand(time(NULL));
 	
@@ -310,15 +324,21 @@ int main(int argc, int* argv[])
 	init_population();
 
 	int g;
-	Guess* maxGuess = copy(population[0]);
+	Guess* maxGuess = malloc(sizeof(Guess));
+	maxGuess->fitness = -1;
 
 	for (g = 0; g <= generationsSize; g++)
 	{ 
+		double sum=0;
 		Guess genMax = population[compute()];
-		if(genMax.distance > maxGuess->distance)
+		int i;
+		for (i=0 ; i<populationSize ; i++)
+			sum+=population[i].fitness;
+		printf("Generation %5d : BestFit = %lf AvFit: %lf Best Length %d \n", g, genMax.fitness,sum/populationSize, genMax.distance);
+		if(genMax.fitness > maxGuess->fitness)
 		{
 			maxGuess = copy(genMax);
-			if (maxGuess->distance > fitnessGoal)
+			if (maxGuess->fitness > fitnessGoal)
 				break;
 		}
 		
@@ -327,5 +347,39 @@ int main(int argc, int* argv[])
  	}
  	
  	printf("Distance : %d\n", maxGuess->distance);
+ 	printf("Fitness : %lf\n", maxGuess->fitness	);
+}
 
+int main(int argc, int* argv[])
+{
+	
+	parseArguments(argc, argv);
+	parseInput();
+	
+	if( checkFlag)
+	{
+		int* seq = malloc(sizeof(int) * citySize);
+		Guess path;
+		path.values = malloc(sizeof(int) * citySize);
+		int i;
+		for(i = 0; i < citySize; i++)
+		{
+			int temp;
+			scanf( "%d", &temp);
+			
+			if(seq[temp-1] != 0)
+			{
+				//TODO print error message.
+				exit(0);
+			}
+			seq[temp -1] = 1;
+			path.values[i] = temp-1;
+		}
+		
+		printf("Path length : %d\n", distance(path));
+	}else 
+	{
+		geneticAlgorithm();
+	}
+ 	
 }
